@@ -17,12 +17,12 @@ export default function AdminStudents() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Students</h1>
+      <h1 className="text-2xl text-gray-800 font-bold mb-4">Students</h1>
 
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <table className="min-w-full bg-white border rounded">
+        <table className="min-w-full bg-white text-gray-800 border rounded">
           <thead className="bg-black text-white">
             <tr>
               <th className="py-2 px-4 border">Roll No</th>

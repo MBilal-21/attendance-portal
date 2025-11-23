@@ -10,8 +10,8 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState({
     students: 0,
     teachers: 0,
-    present: 0,
-    pendingFees: 0,
+    classes: 0,
+    subjects: 0,
   });
 
   useEffect(() => {

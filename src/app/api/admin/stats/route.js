@@ -7,16 +7,17 @@ export async function GET() {
     const [classesRows] = await query("SELECT COUNT(*) as count FROM classes");
     const [subjectsRows] = await query("SELECT COUNT(*) as count FROM subjects");
 
+    // If your query returns [rows, fields], then you want:
     const stats = {
-      students: studentsRows[0]?.count || 0,
-      teachers: teachersRows[0]?.count || 0,
-      classes: classesRows[0]?.count || 0,
-      subjects: subjectsRows[0]?.count || 0,
+      students: studentsRows?.count ?? 0,
+      teachers: teachersRows?.count ?? 0,
+      classes: classesRows?.count ?? 0,
+      subjects: subjectsRows?.count ?? 0,
     };
 
     return new Response(JSON.stringify(stats), { status: 200 });
   } catch (err) {
-    console.error(err);
+    console.error("Stats API Error:", err);
     return new Response(JSON.stringify({ error: "Failed to fetch stats" }), { status: 500 });
   }
 }
