@@ -1,25 +1,47 @@
-// /app/api/student/attendance/route.js
-import { getUserFromToken } from '@/lib/auth';
-import { query } from '@/lib/db';
+import { query } from "@/lib/db";
+import { getUserFromToken } from "@/lib/auth";
 
 export async function GET(req) {
-  const authUser = await getUserFromToken(req);
-  if (!authUser || authUser.role !== 'student') return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 403 });
+  try {
+    const user = await getUserFromToken(req);
 
-  // Map users.id -> students.id
-  const students = await query('SELECT id FROM students WHERE user_id = ?', [authUser.id]);
-  if (!students.length) return new Response(JSON.stringify({ error: 'Student profile not found' }), { status: 404 });
-  const studentId = students[0].id;
+    if (!user || user.role !== "student") {
+      return Response.json({ error: "Unauthorized" }, { status: 403 });
+    }
 
-  const rows = await query(
-    `SELECT a.id, a.date, a.status, s.subject_name, c.program_id, c.semester, c.section, c.start_year
-     FROM attendance a
-     JOIN subjects s ON a.subject_id = s.id
-     JOIN classes c ON a.class_id = c.id
-     WHERE a.student_id = ?
-     ORDER BY a.date DESC`,
-    [studentId]
-  );
+    const student_user_id = user.id;
 
-  return new Response(JSON.stringify(rows), { status: 200 });
+    // Fetch student record
+    const student = await query(
+      "SELECT id, class_id FROM students WHERE user_id = ?",
+      [student_user_id]
+    );
+
+    if (!student.length) {
+      return Response.json({ error: "Student record not found" }, { status: 404 });
+    }
+
+    const student_id = student[0].id;
+
+    // Fetch attendance for this student
+    const attendance = await query(
+      `
+      SELECT date, status 
+      FROM attendance
+      WHERE student_id = ?
+      ORDER BY date DESC
+      `,
+      [student_id]
+    );
+
+    return Response.json({
+      student_id,
+      user_id: student_user_id,
+      student_name: user.name,
+      attendance,
+    });
+  } catch (err) {
+    console.error(err);
+    return Response.json({ error: "Server error" }, { status: 500 });
+  }
 }

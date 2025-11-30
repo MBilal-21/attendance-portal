@@ -1,6 +1,7 @@
 // app/admin/layout.jsx
 import Link from "next/link";
 import Image from "next/image";
+import LogoutButton from "@/components/LogoutButton";
 
 export default function AdminLayout({ children }) {
   return (
@@ -36,10 +37,11 @@ export default function AdminLayout({ children }) {
           <Link href="/admin/assign" className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100">
             🔁 Assign Teacher
           </Link>
+          <div className="mt-4 pt-4  text-gray-500 text-sm">🌙 Dark Mode (Coming Soon)</div>
+          <LogoutButton /> {/* client component sends POST to /api/auth/logout and redirects */}
         </nav>
 
-        <div className="mt-4 pt-4 border-t text-gray-500 text-sm">🌙 Dark Mode (Coming Soon)</div>
-        <Link href="/logout" className="mt-2 text-red-500 text-sm">🚪 Logout</Link>
+
       </aside>
 
       {/* Main content */}
