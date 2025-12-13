@@ -19,6 +19,9 @@ export default function AdminLayout({ children }) {
           <Link href="/admin/attendance" className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100">
             📅 Attendance
           </Link>
+          <Link href="/admin/users/add" className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100">
+            Add Student/Teacher
+          </Link>
           <Link href="/admin/students" className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100">
             🎓 Students
           </Link>

@@ -1,4 +1,3 @@
-
 // ----------------------------------------------------
 // app/admin/page.jsx
 "use client";
@@ -14,6 +13,9 @@ export default function AdminDashboard() {
     subjects: 0,
   });
 
+  const [userName, setUserName] = useState("");
+  const [userLoading, setUserLoading] = useState(true);
+
   useEffect(() => {
     async function fetchStats() {
       try {
@@ -28,12 +30,36 @@ export default function AdminDashboard() {
     fetchStats();
   }, []);
 
+  useEffect(() => {
+    async function fetchCurrentUser() {
+      setUserLoading(true);
+      try {
+        const res = await fetch("/api/auth/me");
+        if (!res.ok) {
+          setUserName(""); // not authenticated or error
+          setUserLoading(false);
+          return;
+        }
+        const data = await res.json();
+        setUserName(data.name || "");
+      } catch (err) {
+        console.error("Failed to fetch current user", err);
+        setUserName("");
+      } finally {
+        setUserLoading(false);
+      }
+    }
+    fetchCurrentUser();
+  }, []);
+
   return (
     <div className="space-y-6 text-gray-800">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">Welcome Back, Aleena Malik</h1>
+          <h1 className="text-2xl md:text-3xl font-bold">
+            {userLoading ? "Welcome Back" : `Welcome Back, ${userName || "Admin"}`}
+          </h1>
           <p className="text-sm text-gray-500">Let’s dive in and get things done.</p>
         </div>
 
@@ -89,47 +115,6 @@ export default function AdminDashboard() {
             <div className="w-6 bg-purple-500 h-16 rounded"></div>
             <div className="w-6 bg-purple-500 h-28 rounded"></div>
           </div>
-        </div>
-      </div>
-
-      {/* Upcoming Events */}
-      <div className="bg-white p-6 rounded-xl shadow">
-        <h2 className="font-semibold mb-4">Upcoming Events</h2>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-gray-500 border-b">
-                <th className="p-2">Name</th>
-                <th className="p-2">Status</th>
-                <th className="p-2">Date</th>
-                <th className="p-2">Action</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr className="border-b">
-                <td className="p-2">Quaid-e-Azam Day</td>
-                <td className="p-2 text-purple-600">Upcoming</td>
-                <td className="p-2">2024-05-18</td>
-                <td className="p-2">✏</td>
-              </tr>
-
-              <tr className="border-b">
-                <td className="p-2">23rd March Holiday</td>
-                <td className="p-2 text-green-600">Done</td>
-                <td className="p-2">2024-05-19</td>
-                <td className="p-2">✏</td>
-              </tr>
-
-              <tr>
-                <td className="p-2">Pakistan Day</td>
-                <td className="p-2 text-red-500">Missed</td>
-                <td className="p-2">2024-05-20</td>
-                <td className="p-2">✏</td>
-              </tr>
-            </tbody>
-          </table>
         </div>
       </div>
     </div>

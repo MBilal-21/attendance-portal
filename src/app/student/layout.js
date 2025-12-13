@@ -13,7 +13,7 @@ export default function StudentLayout({ children }) {
         </nav>
       </aside>
 
-      <main className="flex-1 p-6 bg-white">{children}</main>
+      <main className="flex-1 p-6 bg-white" style={{minHeight:"100vh"}}>{children}</main>
     </div>
   );
 }

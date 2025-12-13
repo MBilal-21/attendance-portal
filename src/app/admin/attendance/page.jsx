@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { FaUserGraduate } from "react-icons/fa";
+import { IoCheckmarkCircleOutline, IoCloseCircleOutline } from "react-icons/io5";
+import { TbCalendar } from "react-icons/tb";
 
 export default function AttendancePage() {
   const [classes, setClasses] = useState([]);
@@ -9,17 +12,16 @@ export default function AttendancePage() {
   const [attendance, setAttendance] = useState({});
   const [date, setDate] = useState("");
 
-  // --------------------------
-  // Set today's date on load
-  // --------------------------
+  const totalStudents = students.length;
+  const totalPresent = Object.values(attendance).filter(v => v === "Present").length;
+  const totalAbsent = Object.values(attendance).filter(v => v === "Absent").length;
+  const totalLeave = Object.values(attendance).filter(v => v === "Leave").length;
+
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
     setDate(today);
   }, []);
 
-  // --------------------------
-  // Load all classes on page load
-  // --------------------------
   useEffect(() => {
     async function loadClasses() {
       const res = await fetch("/api/admin/attendance/classes");
@@ -29,9 +31,6 @@ export default function AttendancePage() {
     loadClasses();
   }, []);
 
-  // --------------------------
-  // Load students of selected class
-  // --------------------------
   async function loadStudents(class_id, selectedDate) {
     if (!class_id || !selectedDate) return;
 
@@ -39,7 +38,6 @@ export default function AttendancePage() {
     const studentsList = await res.json();
     setStudents(studentsList);
 
-    // Try to fetch attendance for this class + date
     const attRes = await fetch(
       `/api/admin/attendance/get?class_id=${class_id}&date=${selectedDate}`
     );
@@ -50,31 +48,22 @@ export default function AttendancePage() {
       savedMap[row.student_id] = row.status;
     });
 
-    // Build initial attendance map
     const initial = {};
     studentsList.forEach((s) => {
-      initial[s.id] = savedMap[s.id] || "Absent"; // default Absent if not saved
+      initial[s.id] = savedMap[s.id] || "Absent";
     });
 
     setAttendance(initial);
   }
 
-  // --------------------------
-  // Trigger when class or date changes
-  // --------------------------
   useEffect(() => {
-    if (selectedClass && date) {
-      loadStudents(selectedClass, date);
-    }
+    if (selectedClass && date) loadStudents(selectedClass, date);
   }, [selectedClass, date]);
 
-  // --------------------------
-  // Save Attendance
-  // --------------------------
   async function saveAttendance() {
     const body = {
       class_id: Number(selectedClass),
-      subject_id: 1, // admin's default subject
+      subject_id: 1,
       date,
       records: Object.keys(attendance).map((id) => ({
         student_id: Number(id),
@@ -93,59 +82,130 @@ export default function AttendancePage() {
   }
 
   return (
-    <div className="space-y-6 text-slate-900 p-6">
-      <h1 className="text-2xl font-bold">Attendance</h1>
+  <div className="p-8 space-y-6 text-gray-900">
 
-      {/* Class & Date */}
-      <div className="flex gap-4">
+    {/* PAGE TITLE */}
+    <div>
+      <h1 className="text-3xl font-bold">Attendance</h1>
+      <div className="text-sm text-gray-500 mt-1">
+        Dashboard {" >> "} Attendance {" >> "} 
+        <span className="text-black font-medium">
+          {selectedClass ? classes.find(c => c.id == selectedClass)?.class_name : "Select Class"}
+        </span>
+      </div>
+    </div>
+
+    {/* CLASS SELECT + DATE + ADD STUDENT */}
+    <div className="flex flex-wrap items-center justify-between gap-4">
+
+      {/* CLASS SELECT */}
+      <div className="flex items-center gap-2">
+        <label className="text-sm font-medium text-gray-700">Class:</label>
         <select
-          className="border p-2 rounded"
           value={selectedClass}
           onChange={(e) => setSelectedClass(e.target.value)}
+          className="border border-gray-300 rounded-md px-3 py-2 outline-none"
         >
           <option value="">Select Class</option>
-          {classes.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.class_name}
+          {classes.map((cls) => (
+            <option key={cls.id} value={cls.id}>
+              {cls.class_name}
             </option>
           ))}
         </select>
+      </div>
 
+      {/* DATE RANGE BOX */}
+      <div className="flex items-center gap-2 border rounded-md px-3 py-2">
+        <TbCalendar size={18} className="text-gray-700" />
         <input
           type="date"
-          className="border p-2 rounded"
           value={date}
           onChange={(e) => setDate(e.target.value)}
+          className="outline-none"
         />
       </div>
 
-      {/* Student Table */}
-      <table className="w-full border mt-4">
-        <thead className="bg-gray-100">
+      {/* ADD STUDENT BUTTON */}
+      {/* <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md">
+        Add Student
+      </button> */}
+    </div>
+
+    {/* SUMMARY CARDS */}
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+
+      <div className="bg-white border p-4 rounded-xl shadow-sm flex items-center gap-4">
+        <FaUserGraduate className="text-purple-600 bg-purple-100 p-2 rounded-full" size={40} />
+        <div>
+          <p className="text-sm text-gray-500">Total Students</p>
+          <p className="text-2xl font-bold">{students.length}</p>
+        </div>
+      </div>
+
+      <div className="bg-white border p-4 rounded-xl shadow-sm flex items-center gap-4">
+        <IoCheckmarkCircleOutline className="text-green-600 bg-green-100 p-2 rounded-full" size={40} />
+        <div>
+          <p className="text-sm text-gray-500">Present</p>
+          <p className="text-2xl font-bold">
+            {Object.values(attendance).filter(v => v === "Present").length}
+          </p>
+        </div>
+      </div>
+
+      <div className="bg-white border p-4 rounded-xl shadow-sm flex items-center gap-4">
+        <IoCloseCircleOutline className="text-red-600 bg-red-100 p-2 rounded-full" size={40} />
+        <div>
+          <p className="text-sm text-gray-500">Absent</p>
+          <p className="text-2xl font-bold">
+            {Object.values(attendance).filter(v => v === "Absent").length}
+          </p>
+        </div>
+      </div>
+
+      <div className="bg-white border p-4 rounded-xl shadow-sm flex items-center gap-4">
+        <FaUserGraduate className="text-yellow-600 bg-yellow-100 p-2 rounded-full" size={40} />
+        <div>
+          <p className="text-sm text-gray-500">Leave</p>
+          <p className="text-2xl font-bold">
+            {Object.values(attendance).filter(v => v === "Leave").length}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    {/* STUDENT TABLE */}
+    <div className="bg-white border rounded-xl p-5 shadow-sm">
+      <table className="w-full">
+        <thead className="text-sm text-gray-600 border-b">
           <tr>
-            <th className="p-2">Roll No</th>
-            <th className="p-2">Student</th>
-            <th className="p-2">Present</th>
-            <th className="p-2">Absent</th>
-            <th className="p-2">Leave</th>
+            <th className="p-3 text-left">Sr</th>
+            <th className="p-3 text-left">Reg No</th>
+            <th className="p-3 text-left">Student</th>
+            <th className="p-3 text-left">Father Name</th>
+            <th className="p-3 text-center text-green-600">Present</th>
+            <th className="p-3 text-center text-red-600">Absent</th>
+            <th className="p-3 text-center text-yellow-600">Leave</th>
           </tr>
         </thead>
 
-        <tbody>
-          {students.map((s) => (
-            <tr key={s.id} className="border">
-              <td className="p-2">{s.roll_no}</td>
-              <td className="p-2">{s.student_name}</td>
+        <tbody className="text-sm">
+          {students.map((s, idx) => (
+            <tr key={s.id} className="border-b hover:bg-gray-50">
+              <td className="p-3">{idx + 1}</td>
+              <td className="p-3">{s.roll_no}</td>
+              <td className="p-3">{s.student_name}</td>
+              <td className="p-3">{s.father_name || "John"}</td>
 
               {["Present", "Absent", "Leave"].map((status) => (
-                <td className="p-2 text-center" key={status}>
+                <td key={status} className="p-3 text-center">
                   <input
-                    type="radio"
-                    name={`student-${s.id}`}
+                    type="checkbox"
                     checked={attendance[s.id] === status}
                     onChange={() =>
                       setAttendance({ ...attendance, [s.id]: status })
                     }
+                    className="w-4 h-4 accent-purple-600"
                   />
                 </td>
               ))}
@@ -153,14 +213,16 @@ export default function AttendancePage() {
           ))}
         </tbody>
       </table>
-
-      {/* Save Button */}
-      <button
-        className="bg-purple-600 text-white px-4 py-2 rounded mt-4"
-        onClick={saveAttendance}
-      >
-        Save Attendance
-      </button>
     </div>
-  );
+
+    {/* SAVE BUTTON */}
+    <button
+      className="bg-purple-600 text-white px-6 py-2 rounded-md mt-4"
+      onClick={saveAttendance}
+    >
+      Save Attendance
+    </button>
+  </div>
+);
+
 }
