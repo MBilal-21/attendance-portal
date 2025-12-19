@@ -1,6 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {
+  FiUser,
+  FiMail,
+  FiHash,
+  FiBookOpen,
+  FiLayers,
+  FiCalendar,
+  FiCheckCircle,
+  FiXCircle,
+  FiClock,
+} from "react-icons/fi";
 
 export default function StudentDashboard() {
   const [loading, setLoading] = useState(true);
@@ -11,24 +22,21 @@ export default function StudentDashboard() {
       try {
         const res = await fetch("/api/student/dashboard");
         const data = await res.json();
-        if (!data.error) {
-          setProfile(data);
-        }
+        if (!data.error) setProfile(data);
       } catch (e) {
         console.error(e);
       }
       setLoading(false);
     }
-
     load();
   }, []);
 
   if (loading) {
-    return <div className="p-4 text-gray-600">Loading...</div>;
+    return <div className="p-6 text-gray-600">Loading dashboard...</div>;
   }
 
   if (!profile) {
-    return <div className="p-4 text-red-600">Unable to load dashboard.</div>;
+    return <div className="p-6 text-red-600">Unable to load dashboard.</div>;
   }
 
   const { user, student, class: classInfo, attendance_summary, latest_attendance } = profile;
@@ -37,96 +45,92 @@ export default function StudentDashboard() {
     <div className="space-y-8 text-gray-800">
 
       {/* HEADER */}
-      <h1 className="text-3xl font-bold">Student Dashboard</h1>
-      <p className="text-gray-500">Welcome back, {user.name}</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Student Dashboard</h1>
+          <p className="text-gray-500 mt-1">Welcome back, {user.name}</p>
+        </div>
+      </div>
 
-      {/* PROFILE BOX */}
-      <div className="bg-white p-6 rounded-xl shadow">
-        <h2 className="text-xl font-semibold mb-4">Profile Information</h2>
+      {/* PROFILE CARD */}
+      <div className="bg-white rounded-xl shadow border p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* <div className="flex justify-between"> */}
-          <div>
-            <p className="text-sm text-gray-500">Name</p>
-            <p className="font-bold">{user.name}</p>
-          </div>
-
-          <div>
-            <p className="text-sm text-gray-500">Email</p>
-            <p className="font-bold">{user.email}</p>
-          </div>
-        
-                
-          <div>
-            <p className="text-sm text-gray-500">Roll No</p>
-            <p className="font-bold">{student.roll_no}</p>
-          </div>
-  
-          <div>
-            <p className="text-sm text-gray-500">Program</p>
-            <p className="font-bold">{classInfo.program_name}</p>
+          {/* AVATAR */}
+          <div className="flex items-center justify-center w-24 h-24 rounded-full bg-green-100 text-green-700">
+            <FiUser size={40} />
           </div>
 
-          <div>
-            <p className="text-sm text-gray-500">Semester</p>
-            <p className="font-bold">{classInfo.semester}</p>
-          </div>
+          {/* INFO GRID */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 flex-1">
 
-          <div>
-            <p className="text-sm text-gray-500">Section</p>
-            <p className="font-bold">{classInfo.section}</p>
-          </div>
+            <Info label="Name" value={user.name} icon={FiUser} />
+            <Info label="Email" value={user.email} icon={FiMail} />
+            <Info label="Roll No" value={student.roll_no} icon={FiHash} />
+            <Info label="Program" value={classInfo.program_name} icon={FiBookOpen} />
+            <Info label="Semester" value={classInfo.semester} icon={FiLayers} />
+            <Info label="Section" value={classInfo.section} icon={FiLayers} />
+            <Info label="Batch" value={classInfo.start_year} icon={FiCalendar} />
 
-          <div>
-            <p className="text-sm text-gray-500">Batch</p>
-            <p className="font-bold">{classInfo.start_year}</p>
           </div>
-           
         </div>
       </div>
 
       {/* ATTENDANCE SUMMARY */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <div className="bg-green-100 p-6 rounded-xl shadow text-center">
-          <p className="text-gray-500">Present</p>
-          <p className="text-3xl font-bold text-green-700">{attendance_summary.present}</p>
-        </div>
-        <div className="bg-red-100 p-6 rounded-xl shadow text-center">
-          <p className="text-gray-500">Absent</p>
-          <p className="text-3xl font-bold text-red-600">{attendance_summary.absent}</p>
-        </div>
-        <div className="bg-yellow-100 p-6 rounded-xl shadow text-center">
-          <p className="text-gray-500">Leave / Late</p>
-          <p className="text-3xl font-bold text-yellow-600">{attendance_summary.leave_days}</p>
-        </div>
+
+        <StatCard
+          label="Present"
+          value={attendance_summary.present}
+          icon={FiCheckCircle}
+          bg="bg-green-100"
+          text="text-green-700"
+        />
+
+        <StatCard
+          label="Absent"
+          value={attendance_summary.absent}
+          icon={FiXCircle}
+          bg="bg-red-100"
+          text="text-red-600"
+        />
+
+        <StatCard
+          label="Leave / Late"
+          value={attendance_summary.leave_days}
+          icon={FiClock}
+          bg="bg-yellow-100"
+          text="text-yellow-600"
+        />
+
       </div>
 
-      {/* LAST ATTENDANCE */}
-      <div className="bg-white p-6 rounded-xl shadow">
+      {/* RECENT ATTENDANCE */}
+      <div className="bg-white rounded-xl shadow border p-6">
         <h2 className="text-xl font-semibold mb-4">Recent Attendance</h2>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-sm border">
-            <thead className="bg-gray-100 border-b">
+          <table className="w-full text-sm">
+            <thead className="border-b bg-gray-50 text-gray-600">
               <tr>
-                <th className="p-2">Date</th>
-                <th className="p-2">Status</th>
+                <th className="p-3 text-left">Date</th>
+                <th className="p-3 text-left">Status</th>
               </tr>
             </thead>
 
             <tbody>
               {latest_attendance.length === 0 ? (
                 <tr>
-                  <td colSpan={2} className="text-center p-4 text-gray-500">
+                  <td colSpan={2} className="text-center p-6 text-gray-500">
                     No attendance recorded.
                   </td>
                 </tr>
               ) : (
                 latest_attendance.map((a, i) => (
-                  <tr key={i} className="border-b">
-                    <td className="p-2">{a.date}</td>
+                  <tr key={i} className="border-b hover:bg-gray-50">
+                    <td className="p-3"> {formatDate(a.date)}</td>
                     <td
-                      className={`p-2 font-bold ${
+                      className={`p-3 font-semibold ${
                         a.status === "Present"
                           ? "text-green-600"
                           : a.status === "Absent"
@@ -146,4 +150,33 @@ export default function StudentDashboard() {
 
     </div>
   );
+}
+
+/* ---------- Small Components ---------- */
+
+function Info({ label, value, icon: Icon }) {
+  return (
+    <div className="flex items-start gap-3">
+      <Icon className="text-green-600 mt-1" />
+      <div>
+        <p className="text-xs text-gray-500">{label}</p>
+        <p className="font-semibold">{value}</p>
+      </div>
+    </div>
+  );
+}
+
+function StatCard({ label, value, icon: Icon, bg, text }) {
+  return (
+    <div className={`${bg} rounded-xl p-6 shadow border text-center`}>
+      <Icon className={`${text} mx-auto mb-2`} size={28} />
+      <p className="text-gray-500 text-sm">{label}</p>
+      <p className={`text-3xl font-bold ${text}`}>{value}</p>
+    </div>
+  );
+}
+
+/* ---------- Date Formatter ---------- */
+function formatDate(dateStr) {
+  return new Date(dateStr).toLocaleDateString();
 }
