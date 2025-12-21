@@ -55,7 +55,9 @@ export default function AdminLayout({ children }) {
       >
         {/* LOGO */}
         <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white z-10">
-          <Image src="/logo2.svg" alt="Smart School" width={130} height={40} />
+          <Link href="/">
+            <Image src="/logo2.svg" alt="Smart School" width={130} height={40} />
+          </Link>
           <button
             className="lg:hidden text-gray-600"
             onClick={() => setOpen(false)}
@@ -71,10 +73,14 @@ export default function AdminLayout({ children }) {
           <NavLink href="/admin/users/add" icon={FiUserPlus} label="Add Student / Teacher" />
           <NavLink href="/admin/students" icon={FiUsers} label="Students" />
           <NavLink href="/admin/teachers" icon={FiUsers} label="Teachers" />
-          <NavLink href="/admin/programs" icon={FiBook} label="Programs" />
+          <NavLink href="#" icon={FiBook} label="Programs" />
+          <NavLink href="#" icon={FiLayers} label="Classes" />
+          <NavLink href="#" icon={FiBook} label="Subjects" />
+          <NavLink href="#" icon={FiRepeat} label="Assign Teacher" />
+          {/* <NavLink href="/admin/programs" icon={FiBook} label="Programs" />
           <NavLink href="/admin/classes" icon={FiLayers} label="Classes" />
           <NavLink href="/admin/subjects" icon={FiBook} label="Subjects" />
-          <NavLink href="/admin/assign" icon={FiRepeat} label="Assign Teacher" />
+          <NavLink href="/admin/assign" icon={FiRepeat} label="Assign Teacher" /> */}
 
           <div className="mt-6 pt-4 border-t text-xs text-gray-500">
             Dark Mode (Coming Soon)

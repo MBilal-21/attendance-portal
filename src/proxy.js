@@ -9,6 +9,7 @@ export async function proxy(req) {
   // don't run middleware for next internals or static/public assets
   const STATIC_EXT_REGEX = /\.(?:png|jpg|jpeg|gif|svg|webp|ico|css|js|json|map)$/i;
   if (
+    pathname === "/" || 
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/static") ||

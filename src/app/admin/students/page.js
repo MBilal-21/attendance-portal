@@ -1,21 +1,48 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FiTrash2, FiEdit3, FiSearch, FiUsers } from "react-icons/fi";
+import {
+  FiUsers,
+  FiEdit3,
+  FiTrash2,
+  FiSearch,
+  FiX,
+} from "react-icons/fi";
 
 export default function StudentsPage() {
   const [students, setStudents] = useState([]);
+  const [classes, setClasses] = useState([]);
+  const [selectedClass, setSelectedClass] = useState("all");
   const [search, setSearch] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
 
+  // ----------------------------------
+  // LOAD CLASSES (SAME AS ATTENDANCE)
+  // ----------------------------------
   useEffect(() => {
-    async function fetchStudents() {
+    async function loadClasses() {
+      const res = await fetch("/api/admin/attendance/classes");
+      const data = await res.json();
+      setClasses(data);
+    }
+    loadClasses();
+  }, []);
+
+  // ----------------------------------
+  // LOAD STUDENTS
+  // ----------------------------------
+  useEffect(() => {
+    async function loadStudents() {
       const res = await fetch("/api/admin/users/list");
       const data = await res.json();
       setStudents(data.filter((u) => u.role === "student"));
     }
-    fetchStudents();
+    loadStudents();
   }, []);
 
+  // ----------------------------------
+  // DELETE STUDENT
+  // ----------------------------------
   async function deleteUser(id) {
     if (!confirm("Are you sure you want to delete this student?")) return;
 
@@ -30,11 +57,27 @@ export default function StudentsPage() {
     }
   }
 
-  const filteredStudents = students.filter((s) =>
-    `${s.name} ${s.email} ${s.roll_no ?? ""}`
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  );
+  // ----------------------------------
+  // FILTER STUDENTS
+  // ----------------------------------
+  const filteredStudents = students.filter((s) => {
+    const matchSearch =
+      `${s.name} ${s.email} ${s.roll_no ?? ""}`
+        .toLowerCase()
+        .includes(search.toLowerCase());
+
+    const matchClass =
+      selectedClass === "all" || s.class_id == selectedClass;
+
+    return matchSearch && matchClass;
+  });
+
+  // ----------------------------------
+  // HELPER: CLASS NAME
+  // ----------------------------------
+  function getClassName(class_id) {
+    return classes.find((c) => c.id == class_id)?.class_name || "—";
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -45,36 +88,71 @@ export default function StudentsPage() {
           <h1 className="text-3xl font-bold flex items-center gap-2">
             <FiUsers /> Students
           </h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Dashboard {" > "} Students List
+          <p className="text-sm text-gray-500 mt-1">
+            Dashboard {" > "} Students
           </p>
         </div>
 
         <a
           href="/admin/users/add"
-          className="bg-purple-600 text-white px-5 py-2 rounded-lg shadow hover:bg-purple-700 transition"
+          className="bg-purple-600 text-white px-5 py-2 rounded-lg shadow hover:bg-purple-700"
         >
           + Add Student
         </a>
       </div>
 
-      {/* SEARCH BAR (CENTERED) */}
-      <div className="flex justify-center">
-        <div className="relative w-full max-w-md">
-          <FiSearch className="absolute left-3 top-3 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search by name, email or roll no"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
+      {/* SEARCH + FILTER */}
+      <div className="flex flex-wrap items-center justify-center gap-4">
+
+        {/* SEARCH */}
+        <div className="relative">
+          {!searchOpen ? (
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="p-2 border rounded-lg bg-white shadow"
+            >
+              <FiSearch />
+            </button>
+          ) : (
+            <div className="relative w-72">
+              <FiSearch className="absolute left-3 top-3 text-gray-400" />
+              <input
+                autoFocus
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search name, email, roll no"
+                className="w-full pl-10 pr-10 py-2 border rounded-lg"
+              />
+              <button
+                onClick={() => {
+                  setSearch("");
+                  setSearchOpen(false);
+                }}
+                className="absolute right-3 top-3 text-gray-400"
+              >
+                <FiX />
+              </button>
+            </div>
+          )}
         </div>
+
+        {/* CLASS FILTER (FROM ATTENDANCE LOGIC) */}
+        <select
+          value={selectedClass}
+          onChange={(e) => setSelectedClass(e.target.value)}
+          className="border px-4 py-2 rounded-lg bg-white shadow"
+        >
+          <option value="all">All Classes</option>
+          {classes.map((cls) => (
+            <option key={cls.id} value={cls.id}>
+              {cls.class_name}
+            </option>
+          ))}
+        </select>
       </div>
 
-      {/* TABLE CARD */}
-      <div className="bg-white rounded-xl shadow border">
-
+      {/* TABLE */}
+      <div className="bg-white border rounded-xl shadow">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-gray-100 border-b text-gray-600">
@@ -91,10 +169,7 @@ export default function StudentsPage() {
             <tbody>
               {filteredStudents.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan={6}
-                    className="p-6 text-center text-gray-500"
-                  >
+                  <td colSpan={6} className="p-6 text-center text-gray-500">
                     No students found
                   </td>
                 </tr>
@@ -102,20 +177,20 @@ export default function StudentsPage() {
                 filteredStudents.map((s, idx) => (
                   <tr
                     key={s.id}
-                    className={`border-b hover:bg-gray-50 transition ${
+                    className={`border-b hover:bg-gray-50 ${
                       idx % 2 === 0 ? "bg-white" : "bg-gray-50/40"
                     }`}
                   >
                     <td className="p-3">{s.id}</td>
                     <td className="p-3 font-medium">{s.name}</td>
                     <td className="p-3 text-gray-600">{s.email}</td>
-                    <td className="p-3">{s.class_id ?? "—"}</td>
+                    <td className="p-3">{getClassName(s.class_id)}</td>
                     <td className="p-3">{s.roll_no ?? "—"}</td>
 
                     <td className="p-3 flex justify-center gap-2">
                       <a
                         href={`/admin/students/edit/${s.id}`}
-                        className="flex items-center gap-1 bg-blue-100 text-blue-600 px-3 py-1.5 rounded-lg hover:bg-blue-200 transition"
+                        className="flex items-center gap-1 bg-blue-100 text-blue-600 px-3 py-1.5 rounded-lg hover:bg-blue-200"
                       >
                         <FiEdit3 size={14} />
                         Edit
@@ -123,7 +198,7 @@ export default function StudentsPage() {
 
                       <button
                         onClick={() => deleteUser(s.id)}
-                        className="flex items-center gap-1 bg-red-100 text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-200 transition"
+                        className="flex items-center gap-1 bg-red-100 text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-200"
                       >
                         <FiTrash2 size={14} />
                         Delete

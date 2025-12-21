@@ -1,9 +1,6 @@
-// ----------------------------------------------------
-// app/admin/page.jsx
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -26,7 +23,6 @@ export default function AdminDashboard() {
         console.error(err);
       }
     }
-
     fetchStats();
   }, []);
 
@@ -36,7 +32,7 @@ export default function AdminDashboard() {
       try {
         const res = await fetch("/api/auth/me");
         if (!res.ok) {
-          setUserName(""); // not authenticated or error
+          setUserName("");
           setUserLoading(false);
           return;
         }
@@ -51,6 +47,10 @@ export default function AdminDashboard() {
     }
     fetchCurrentUser();
   }, []);
+
+  // Dummy data for charts
+  const attendanceData = [60, 80, 40, 70, 90, 50, 75];
+  const activityData = [30, 50, 70, 40, 60, 80, 55];
 
   return (
     <div className="space-y-6 text-gray-800">
@@ -70,53 +70,54 @@ export default function AdminDashboard() {
 
       {/* Top Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        <div className="bg-white p-5 rounded-xl shadow">
-          <h2 className="text-sm text-gray-500">Total Students</h2>
-          <p className="text-2xl font-bold mt-2">{stats.students}</p>
-        </div>
-
-        <div className="bg-white p-5 rounded-xl shadow">
-          <h2 className="text-sm text-gray-500">Total Teachers</h2>
-          <p className="text-2xl font-bold mt-2">{stats.teachers}</p>
-        </div>
-
-        <div className="bg-white p-5 rounded-xl shadow">
-          <h2 className="text-sm text-gray-500">Total Classes</h2>
-          <p className="text-2xl font-bold mt-2">{stats.classes}</p>
-        </div>
-
-        <div className="bg-white p-5 rounded-xl shadow">
-          <h2 className="text-sm text-gray-500">Total Subjects</h2>
-          <p className="text-2xl font-bold mt-2">{stats.subjects}</p>
-        </div>
+        <StatCard label="Total Students" value={stats.students} />
+        <StatCard label="Total Teachers" value={stats.teachers} />
+        <StatCard label="Total Classes" value={stats.classes} />
+        <StatCard label="Total Subjects" value={stats.subjects} />
       </div>
 
-      {/* Middle Section */}
+      {/* Middle Section - Dummy Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Attendance Illustration */}
-        <div className="bg-white p-6 rounded-xl shadow flex items-center justify-center">
-          <Image
-            src="/logo2.svg"
-            alt="Attendance Stats"
-            width={350}
-            height={350}
-            className="object-contain"
-          />
+        {/* Attendance Chart */}
+        <div className="bg-white p-6 rounded-xl shadow">
+          <h2 className="font-semibold mb-4">Attendance Overview</h2>
+          <div className="h-48 flex items-end gap-3 justify-around">
+            {attendanceData.map((val, i) => (
+              <div
+                key={i}
+                className="w-6 bg-green-500 rounded transition-all"
+                style={{ height: `${val}%` }}
+                title={`${val}%`}
+              />
+            ))}
+          </div>
         </div>
 
-        {/* Accounts Chart Placeholder */}
+        {/* Activity Chart */}
         <div className="bg-white p-6 rounded-xl shadow">
-          <h2 className="font-semibold mb-4">Accounts</h2>
-          <div className="h-48 flex items-end justify-between gap-4">
-            <div className="w-6 bg-purple-500 h-20 rounded"></div>
-            <div className="w-6 bg-purple-500 h-32 rounded"></div>
-            <div className="w-6 bg-purple-500 h-24 rounded"></div>
-            <div className="w-6 bg-purple-500 h-40 rounded"></div>
-            <div className="w-6 bg-purple-500 h-16 rounded"></div>
-            <div className="w-6 bg-purple-500 h-28 rounded"></div>
+          <h2 className="font-semibold mb-4">Activity Overview</h2>
+          <div className="h-48 flex items-end gap-3 justify-around">
+            {activityData.map((val, i) => (
+              <div
+                key={i}
+                className="w-6 bg-blue-500 rounded transition-all"
+                style={{ height: `${val}%` }}
+                title={`${val}%`}
+              />
+            ))}
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ---------- Small Component ---------- */
+function StatCard({ label, value }) {
+  return (
+    <div className="bg-white p-5 rounded-xl shadow">
+      <h2 className="text-sm text-gray-500">{label}</h2>
+      <p className="text-2xl font-bold mt-2">{value}</p>
     </div>
   );
 }
