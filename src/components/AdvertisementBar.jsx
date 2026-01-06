@@ -37,6 +37,58 @@ export default function AdvertisementBar({ open, setOpen }) {
           desc="Integrated student, teacher & admin management."
           img="/assets/ad2.webp"
         />
+        {/* AD 1 */}
+        <AdCard
+          title="Smart Attendance System"
+          desc="Automate attendance with secure role-based access."
+          img="/assets/ad1.png"
+        />
+
+        {/* AD 2 */}
+        <AdCard
+          title="University ERP Solution"
+          desc="Integrated student, teacher & admin management."
+          img="/assets/ad2.webp"
+        />
+        {/* AD 1 */}
+        <AdCard
+          title="Smart Attendance System"
+          desc="Automate attendance with secure role-based access."
+          img="/assets/ad1.png"
+        />
+
+        {/* AD 2 */}
+        <AdCard
+          title="University ERP Solution"
+          desc="Integrated student, teacher & admin management."
+          img="/assets/ad2.webp"
+        />
+        {/* AD 1 */}
+        <AdCard
+          title="Smart Attendance System"
+          desc="Automate attendance with secure role-based access."
+          img="/assets/ad1.png"
+        />
+
+        {/* AD 2 */}
+        <AdCard
+          title="University ERP Solution"
+          desc="Integrated student, teacher & admin management."
+          img="/assets/ad2.webp"
+        />
+        {/* AD 1 */}
+        <AdCard
+          title="Smart Attendance System"
+          desc="Automate attendance with secure role-based access."
+          img="/assets/ad1.png"
+        />
+
+        {/* AD 2 */}
+        <AdCard
+          title="University ERP Solution"
+          desc="Integrated student, teacher & admin management."
+          img="/assets/ad2.webp"
+        />
 
       </div>
     </aside>

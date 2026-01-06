@@ -64,9 +64,9 @@ export default function TeacherLayout({ children }) {
         {/* NAVIGATION */}
         <nav className="p-4 space-y-1 text-sm font-medium text-gray-700">
           <NavItem href="/teacher" icon={FiHome} label="Dashboard" />
-          <NavItem href="#" icon={FiUsers} label="My Classes" />
-          <NavItem href="#" icon={FiCalendar} label="Attendance" />
-          <NavItem href="#" icon={FiBookOpen} label="Profile" />
+          <NavItem href="/teacher/users/add" icon={FiUsers} label="Add Students" />
+          <NavItem href="/teacher/attendance" icon={FiCalendar} label="Attendance" />
+          {/* <NavItem href="#" icon={FiBookOpen} label="Profile" /> */}
 
           <div className="mt-6 pt-4 border-t">
             <LogoutButton />

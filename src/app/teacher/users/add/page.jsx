@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
 export default function AddUserPage() {
-  const [role, setRole] = useState("teacher");
+  const [role, setRole] = useState("student");
   const [classes, setClasses] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
@@ -152,7 +152,6 @@ export default function AddUserPage() {
             value={role}
             onChange={(e) => setRole(e.target.value)}
           >
-            <option value="teacher">Teacher</option>
             <option value="student">Student</option>
           </select>
         </div>

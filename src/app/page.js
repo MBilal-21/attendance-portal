@@ -88,9 +88,9 @@ export default function LandingPage() {
 
           {/* SOCIAL LINKS */}
           <div className="flex gap-4 mt-6 text-xl text-gray-600">
-            <FaFacebook className="hover:text-indigo-600 cursor-pointer" />
-            <FaLinkedin className="hover:text-indigo-600 cursor-pointer" />
-            <FaGithub className="hover:text-indigo-600 cursor-pointer" />
+            <Link href="https://www.facebook.com"><FaFacebook className="hover:text-indigo-600 cursor-pointer" /></Link>
+            <Link href="https://www.linkedin.com"><FaLinkedin className="hover:text-indigo-600 cursor-pointer" /></Link>
+            <Link href="https://www.github.com"><FaGithub className="hover:text-indigo-600 cursor-pointer" /></Link>
           </div>
         </div>
 
@@ -151,15 +151,19 @@ export default function LandingPage() {
           <div>
             <h2 className="text-2xl font-bold mb-2">Our Location</h2>
             <p className="text-gray-600">
-              Department of IT, University Campus
+              Department of IT, University Of Sargodha Main Campus
             </p>
           </div>
-
+            <iframe 
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3380.8370270071105!2d72.67776427401112!3d32.073656419601186!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x392177bfd683f3d5%3A0xa8090086de867b9d!2sUniversity%20of%20Sargodha!5e0!3m2!1sen!2s!4v1762716152892!5m2!1sen!2s"
+          width="100%" height="450"  loading="lazy"
+          />
+{/* 
           <iframe
             className="w-full h-64 rounded-lg border"
             loading="lazy"
             src="https://www.google.com/maps?q=University%20Campus&output=embed"
-          />
+          /> */}
         </div>
       </section>
 
