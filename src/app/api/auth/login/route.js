@@ -1,7 +1,6 @@
 export const runtime = "nodejs";
 
 import { query } from "@/lib/db";
-import bcrypt from "bcryptjs";
 import { signToken, setTokenCookie } from "@/lib/auth";
 
 export async function POST(req) {
@@ -23,10 +22,8 @@ export async function POST(req) {
 
     const user = users[0];
 
-    // bcrypt compare (Node runtime only)
-    const match = await bcrypt.compare(password, user.password);
-
-    if (!match) {
+    // ⚠️ PLAIN TEXT PASSWORD CHECK (TEMPORARY)
+    if (password !== user.password) {
       return Response.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
