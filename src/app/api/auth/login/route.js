@@ -1,14 +1,19 @@
 export const runtime = "nodejs";
 
+import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
-import { signToken, setTokenCookie } from "@/lib/auth";
+import { signToken } from "@/lib/auth";
+import cookie from "cookie";
 
 export async function POST(req) {
   try {
     const { email, password } = await req.json();
 
     if (!email || !password) {
-      return Response.json({ error: "Missing credentials" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing credentials" },
+        { status: 400 }
+      );
     }
 
     const users = await query(
@@ -17,29 +22,49 @@ export async function POST(req) {
     );
 
     if (!users.length) {
-      return Response.json({ error: "Invalid credentials" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Invalid credentials" },
+        { status: 401 }
+      );
     }
 
     const user = users[0];
 
-    // ⚠️ PLAIN TEXT PASSWORD CHECK (TEMPORARY)
+    // plain text check (your current test)
     if (password !== user.password) {
-      return Response.json({ error: "Invalid credentials" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Invalid credentials" },
+        { status: 401 }
+      );
     }
 
     const token = signToken({ id: user.id, role: user.role });
 
-    const res = Response.json(
+    const response = NextResponse.json(
       { message: "Logged in", role: user.role },
       { status: 200 }
     );
 
-    setTokenCookie(res, token);
-    return res;
+    response.headers.set(
+      "Set-Cookie",
+      cookie.serialize(
+        process.env.COOKIE_NAME || "token",
+        token,
+        {
+          httpOnly: true,
+          secure: true,          // REQUIRED on Vercel
+          sameSite: "lax",
+          path: "/",
+          maxAge: Number(process.env.COOKIE_MAX_AGE || 172800),
+        }
+      )
+    );
+
+    return response;
 
   } catch (err) {
-    console.error("LOGIN ERROR:", err);
-    return Response.json(
+    console.error("LOGIN CRASH:", err);
+    return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
     );
