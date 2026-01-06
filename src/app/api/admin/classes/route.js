@@ -1,4 +1,3 @@
-export const runtime = "nodejs";
 
 
 // /app/api/admin/classes/route.js

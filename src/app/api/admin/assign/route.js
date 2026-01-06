@@ -1,7 +1,4 @@
 // /app/api/admin/assign/route.js
-export const runtime = "nodejs";
-
-
 import { getUserFromToken } from '@/lib/auth';
 import { query } from '@/lib/db';
 

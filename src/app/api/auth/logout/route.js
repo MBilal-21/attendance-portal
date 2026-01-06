@@ -1,4 +1,4 @@
-export const runtime = "nodejs";
+// export const runtime = "nodejs";
 
 // /app/api/auth/logout/route.js
 import cookie from 'cookie';
