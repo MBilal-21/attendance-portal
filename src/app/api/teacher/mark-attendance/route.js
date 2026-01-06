@@ -1,3 +1,5 @@
+export const runtime = "nodejs";
+
 // /app/api/teacher/mark-attendance/route.js
 import { getUserFromToken } from '@/lib/auth';
 import { query } from '@/lib/db';

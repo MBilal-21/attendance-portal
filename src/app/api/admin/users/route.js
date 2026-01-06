@@ -1,3 +1,5 @@
+export const runtime = "nodejs";
+
 // /app/api/admin/create-user/route.js
 import { query } from '@/lib/db';
 import bcrypt from 'bcryptjs';

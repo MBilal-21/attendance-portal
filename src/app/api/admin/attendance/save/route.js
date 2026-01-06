@@ -1,3 +1,5 @@
+export const runtime = "nodejs";
+
 import { query } from "@/lib/db";
 import { verifyToken } from "@/lib/auth";
 

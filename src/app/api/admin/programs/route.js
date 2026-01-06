@@ -1,3 +1,5 @@
+export const runtime = "nodejs";
+
 // /app/api/admin/programs/route.js
 import { query } from '@/lib/db';
 import { getUserFromToken } from '@/lib/auth';

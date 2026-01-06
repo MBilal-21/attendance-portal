@@ -1,3 +1,6 @@
+
+export const runtime = "nodejs";
+
 // src/app/api/auth/me/route.js
 import { getUserFromToken } from "@/lib/auth";
 
