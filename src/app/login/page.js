@@ -14,22 +14,22 @@ export default function LoginPage() {
   // ---------------------------------------------------
   // REDIRECT IF ALREADY LOGGED IN
   // ---------------------------------------------------
-  useEffect(() => {
-    async function checkAuth() {
-      try {
-        const res = await fetch("/api/auth/me");
-        if (res.ok) {
-          const data = await res.json();
-          if (data.role === "admin") window.location.href = "/admin";
-          else if (data.role === "teacher") window.location.href = "/teacher";
-          else if (data.role === "student") window.location.href = "/student";
-        }
-      } catch (err) {
-        // ignore
-      }
-    }
-    checkAuth();
-  }, []);
+  // useEffect(() => {
+  //   async function checkAuth() {
+  //     try {
+  //       const res = await fetch("/api/auth/me");
+  //       if (res.ok) {
+  //         const data = await res.json();
+  //         if (data.role === "admin") window.location.href = "/admin";
+  //         else if (data.role === "teacher") window.location.href = "/teacher";
+  //         else if (data.role === "student") window.location.href = "/student";
+  //       }
+  //     } catch (err) {
+  //       // ignore
+  //     }
+  //   }
+  //   checkAuth();
+  // }, []);
 
   // ---------------------------------------------------
   // LOGIN HANDLER
